@@ -1,11 +1,11 @@
-// Initialize the Phaser Game object and set default game window size
+// Inicialize o objeto Phaser Game e defina o tamanho padrão da janela do jogo
 const game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
   preload: preload,
   create: create,
   update: update
 })
 
-// Declare shared variables at the top so all methods can access them
+// Declarar variáveis ​​compartilhadas na parte superior para que todos os métodos possam acessá-las
 let score = 0
 let scoreText
 let platforms
@@ -14,7 +14,7 @@ let cursors
 let player
 
 function preload() {
-  // Load & Define our game assets
+  // Carrega e define nossos recursos de jogo
   game.load.image('sky', './assets/sky.png')
   game.load.image('ground', './assets/platform.png')
   game.load.image('diamond', './assets/diamond.png')
@@ -22,83 +22,85 @@ function preload() {
 }
 
 function create() {
-  //  We're going to be using physics, so enable the Arcade Physics system
+  // Vamos usar a física, então habilite o sistema Arcade Physics
   game.physics.startSystem(Phaser.Physics.ARCADE)
 
-  //  A simple background for our game
+  // Um fundo simples para o nosso jogo
   game.add.sprite(0, 0, 'sky')
 
-  //  The platforms group contains the ground and the 2 ledges we can jump on
+  // O grupo de plataformas contém o terreno e as 2 bordas em que podemos pular
   platforms = game.add.group()
 
-  //  We will enable physics for any object that is created in this group
+
+  // Vamos habilitar a física para qualquer objeto criado neste grupo
   platforms.enableBody = true
 
-  // Here we create the ground.
+
+  // Vamos habilitar a física para qualquer objeto criado neste grupo
   const ground = platforms.create(0, game.world.height - 64, 'ground')
 
   //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
   ground.scale.setTo(2, 2)
 
-  //  This stops it from falling away when you jump on it
+  // Isso impede que ele desapareça quando você pula nele
   ground.body.immovable = true
 
-  //  Now let's create two ledges
+  // Agora vamos criar duas bordas
   let ledge = platforms.create(400, 450, 'ground')
   ledge.body.immovable = true
 
   ledge = platforms.create(-75, 350, 'ground')
   ledge.body.immovable = true
 
-  // The player and its settings
+  // O player e suas configurações
   player = game.add.sprite(32, game.world.height - 150, 'woof')
 
-  //  We need to enable physics on the player
+  // Precisamos habilitar a física no player
   game.physics.arcade.enable(player)
 
-  //  Player physics properties. Give the little guy a slight bounce.
+  // Propriedades físicas do jogador. Dê um pequeno empurrão no rapaz.
   player.body.bounce.y = 0.2
   player.body.gravity.y = 800
   player.body.collideWorldBounds = true
 
-  //  Our two animations, walking left and right.
+  // Nossas duas animações, andando para a esquerda e para a direita.
   player.animations.add('left', [0, 1], 10, true)
   player.animations.add('right', [2, 3], 10, true)
 
-  //  Finally some diamonds to collect
+  // Finalmente alguns diamantes para coletar
   diamonds = game.add.group()
 
-  //  Enable physics for any object that is created in this group
+  // Habilite a física para qualquer objeto criado neste grupo
   diamonds.enableBody = true
 
-  //  Create 12 diamonds evenly spaced apart
+  // Crie 12 diamantes uniformemente espaçados
   for (var i = 0; i < 12; i++) {
     const diamond = diamonds.create(i * 70, 0, 'diamond')
 
-    //  Drop em from the sky and bounce a bit
+    // Solte-os do céu e salte um pouco
     diamond.body.gravity.y = 1000
     diamond.body.bounce.y = 0.3 + Math.random() * 0.2
   }
 
-  //  Create the score text
+  // Crie o texto da pontuação
   scoreText = game.add.text(16, 16, '', { fontSize: '32px', fill: '#000' })
 
-  //  And bootstrap our controls
+  // E inicializa nossos controles
   cursors = game.input.keyboard.createCursorKeys()
 }
 
 function update() {
-  //  We want the player to stop when not moving
+  // Queremos que o player pare quando não estiver em movimento
   player.body.velocity.x = 0
 
-  //  Setup collisions for the player, diamonds, and our platforms
+  // Configurar colisões para o jogador, diamantes e nossas plataformas
   game.physics.arcade.collide(player, platforms)
   game.physics.arcade.collide(diamonds, platforms)
 
-  //  Call callectionDiamond() if player overlaps with a diamond
+  // Chame callectionDiamond () se o jogador for sobrepuser a um diamante
   game.physics.arcade.overlap(player, diamonds, collectDiamond, null, this)
 
-  // Configure the controls!
+  // Configure os controles!
   if (cursors.left.isDown) {
     player.body.velocity.x = -150
     player.animations.play('left')
@@ -106,15 +108,15 @@ function update() {
     player.body.velocity.x = 150
     player.animations.play('right')
   } else {
-    // If no movement keys are pressed, stop the player
+    // Se nenhuma tecla de movimento for pressionada, pare o player
     player.animations.stop()
   }
 
-  //  This allows the player to jump!
+  // Isso permite que o jogador pule!
   if (cursors.up.isDown && player.body.touching.down) {
     player.body.velocity.y = -400
   }
-  // Show an alert modal when score reaches 120
+  // Mostra um modal de alerta quando a pontuação atinge 120
   if (score === 120) {
     alert('Você ganhou! =)')
     score = 0
@@ -122,10 +124,12 @@ function update() {
 }
 
 function collectDiamond(player, diamond) {
-  // Removes the diamond from the screen
+  // Remove o diamante da tela
   diamond.kill()
 
-  //  And update the score
+  // E atualize a pontuação
   score += 10
   scoreText.text = 'Score: ' + score
 }
+
+
